@@ -16,13 +16,12 @@ class PostAnswersTest extends TestCase
      *
      * @return void
      */
-    public function test_user_can_post_an_answer_to_a_published_question()
+    public function test_signed_in_user_can_post_an_answer_to_a_published_question()
     {
         $question = Question::factory()->published()->create();
-        $user = User::factory()->create();
+        $this->actingAs($user = User::factory()->create());
 
         $response = $this->post("/questions/{$question->id}/answers", [
-            'user_id' => $user->id,
             'content' => 'This is an answer.'
         ]);
 
@@ -46,5 +45,18 @@ class PostAnswersTest extends TestCase
         $response->assertStatus(404);
         $this->assertDatabaseMissing('answers', ['question_id' => $question->id]);
         $this->assertEquals(0, $question->answers()->count());
+    }
+
+    public function test_content_is_required_to_post_answers()
+    {
+        $question = Question::factory()->published()->create();
+        $user = User::factory()->create();
+        $response = $this->withExceptionHandling()
+            ->post("/questions/{$question->id}/answers", [
+                'user_id' => $user->id,
+                'content' => null
+            ]);
+        $response->assertRedirect()
+            ->assertSessionHasErrors('content');
     }
 }
