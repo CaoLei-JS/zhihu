@@ -38,4 +38,17 @@ class BestAnswerTest extends TestCase
         $this->assertFalse($answers[0]->refresh()->isBest());
         $this->assertTrue($answers[1]->refresh()->isBest());
     }
+
+    public function test_only_the_question_creator_can_mark_a_best_answer()
+    {
+        $this->withExceptionHandling();
+        $this->signIn();
+        $question = create(Question::class, ['user_id' => auth()->id()]);
+        $answer = create(Answer::class, ['question_id' => $question->id]);
+
+        $this->signIn(create(User::class));
+        $this->postJson(route('best-answers.store', ['answer' => $answer]), [$answer])
+            ->assertStatus(403);
+        $this->assertFalse($answer->fresh()->isBest());
+    }
 }
