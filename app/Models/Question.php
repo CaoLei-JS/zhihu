@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Question extends Model
 {
+    protected $guarded = ['id'];
     use HasFactory;
 
     public function scopePublished(Builder $builder)

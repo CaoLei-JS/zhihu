@@ -13,4 +13,14 @@ class Answer extends Model
         'content'
     ];
     use HasFactory;
+
+    public function isBest()
+    {
+        return $this->id == $this->question->best_answer_id;
+    }
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
 }
