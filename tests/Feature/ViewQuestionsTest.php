@@ -24,16 +24,6 @@ class ViewQuestionsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_user_can_view_a_single_question()
-    {
-        $this->withoutExceptionHandling();
-        $question = Question::factory()->create();
-        $test = $this->get('/questions/' . $question->id);
-        $test->assertStatus(200)
-            ->assertSee($question->title)
-            ->assertSee($question->content);
-    }
-
     public function test_user_can_view_a_published_question()
     {
         $question = Question::factory()->create([
