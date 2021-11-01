@@ -14,9 +14,7 @@ class BestAnswerController extends Controller
 
     public function store(Answer $answer)
     {
-        $answer->question()->update([
-            'best_answer_id' => $answer->id,
-        ]);
+        $answer->question->markAsBestAnswer($answer);
         return back();
     }
 }

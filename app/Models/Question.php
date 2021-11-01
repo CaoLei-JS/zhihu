@@ -21,4 +21,9 @@ class Question extends Model
     {
         return $this->hasMany('App\Models\Answer');
     }
+
+    public function markAsBestAnswer(Answer $answer)
+    {
+        $this->update(['best_answer_id' => $answer->id]);
+    }
 }
