@@ -11,6 +11,15 @@ class PostAnswersTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_guests_may_not_post_an_answer()
+    {
+        $this->expectException('Illuminate\Auth\AuthenticationException');
+        $question = Question::factory()->published()->create();
+        $this->post("questions/$question->id/answers", [
+            'content' => 'This is an answer'
+        ]);
+    }
+
     /**
      * A basic feature test example.
      *
@@ -25,7 +34,7 @@ class PostAnswersTest extends TestCase
             'content' => 'This is an answer.'
         ]);
 
-        $response->assertStatus(201);
+        $response->assertStatus(302);
 
         $answer = $question->answers()->where('user_id', $user->id)->first();
         $this->assertNotNull($answer);
@@ -36,7 +45,7 @@ class PostAnswersTest extends TestCase
     public function test_user_can_not_post_an_answer_to_an_unpublished_question()
     {
         $question = Question::factory()->unpublished()->create();
-        $user = User::factory()->create();
+        $this->actingAs($user = User::factory()->create());
         $response = $this->withExceptionHandling()
             ->post("questions/{$question->id}/answers", [
                 'user_id' => $user->id,
@@ -50,7 +59,7 @@ class PostAnswersTest extends TestCase
     public function test_content_is_required_to_post_answers()
     {
         $question = Question::factory()->published()->create();
-        $user = User::factory()->create();
+        $this->actingAs($user = User::factory()->create());
         $response = $this->withExceptionHandling()
             ->post("/questions/{$question->id}/answers", [
                 'user_id' => $user->id,

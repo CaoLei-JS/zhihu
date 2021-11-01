@@ -20,6 +20,6 @@ class AnswerController extends Controller
             'user_id' => auth()->id(),
             'content' => $request['content']
         ]);
-        return response()->json([], 201);
+        return back();
     }
 }
